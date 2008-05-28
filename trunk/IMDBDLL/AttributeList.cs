@@ -10,6 +10,7 @@ namespace IMDBDLL
     /// Limited GNU Public License(LGPL).
     ///
     /// Written by Jeff Heaton (http://www.jeffheaton.com)
+    /// http://www.developer.com/net/csharp/article.php/10918_2230091_2
     /// </summary>
     ///
     public class AttributeList : Attribute
@@ -49,7 +50,7 @@ namespace IMDBDLL
         /// Add the specified attribute to the list of attributes.
         /// </summary>
         /// <param name="a">An attribute to add to this
-        /// AttributeList.</paramv
+        /// AttributeList.</param>
         public void Add(Attribute a)
         {
             m_list.Add(a);

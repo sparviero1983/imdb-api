@@ -2,6 +2,9 @@
 
 namespace IMDBDLL
 {
+    /// <summary>
+    /// http://www.developer.com/net/csharp/article.php/10918_2230091_2
+    /// </summary>
     public class Parse : AttributeList
     {
         /// <summary>
@@ -190,7 +193,7 @@ namespace IMDBDLL
 
         /// <summary>
         /// The last attribute name that was encountered.
-        /// <summary>
+        /// </summary>
         public string ParseName
         {
             get
@@ -206,7 +209,7 @@ namespace IMDBDLL
 
         /// <summary>
         /// The last attribute value that was encountered.
-        /// <summary>
+        /// </summary>
         public string ParseValue
         {
             get
@@ -222,7 +225,7 @@ namespace IMDBDLL
 
         /// <summary>
         /// The last attribute delimeter that was encountered.
-        /// <summary>
+        /// </summary>
         public char ParseDelim
         {
             get
@@ -238,7 +241,7 @@ namespace IMDBDLL
 
         /// <summary>
         /// The text that is to be parsed.
-        /// <summary>
+        /// </summary>
         public string Source
         {
             get

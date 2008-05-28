@@ -9,6 +9,9 @@ namespace Test
 {
     class Program
     {
+        /// <summary>
+        /// Constructor of the class
+        /// </summary>
         public Program()
         {
             IIMDb imdb = new IMDB();
@@ -67,11 +70,19 @@ namespace Test
             }
         }
 
+        /// <summary>
+        /// start point of the program
+        /// </summary>
+        /// <param name="args">arguments of the program</param>
         static void Main(string[] args)
         {
             new Program();
         }
 
+        /// <summary>
+        /// This will make the program to wait multiple threads to finish before going on
+        /// </summary>
+        /// <param name="waitHandles"></param>
         private void WaitAll(WaitHandle[] waitHandles)
         {
             if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)

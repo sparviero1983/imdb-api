@@ -2,6 +2,9 @@
 
 namespace IMDBDLL
 {
+    /// <summary>
+    /// http://www.developer.com/net/csharp/article.php/10918_2230091_2
+    /// </summary>
     public class ParseHTML : Parse
     {
         public AttributeList GetTag()

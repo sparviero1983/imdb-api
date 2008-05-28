@@ -73,7 +73,7 @@ namespace IMDBDLL
         /// </summary>
         ///  <param name="formato"> Defines if it's to search a movie or a tv show
         ///  0 - movie
-        ///  1 - tv show
+        ///  1 - tv show</param>
         /// <returns>If the page is a result list page - 1
         /// or the actual result - 0</returns>
         public int getType(int formato)
@@ -179,6 +179,10 @@ namespace IMDBDLL
             return null;
         }
 
+        /// <summary>
+        /// returns the object with info of the title
+        /// </summary>
+        /// <returns>the object that contains the info fetched from the site</returns>
         public Title getTitle()
         {
             return title;

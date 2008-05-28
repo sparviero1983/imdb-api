@@ -5,11 +5,17 @@ using System.Text;
 
 namespace IMDBDLL
 {
+    /// <summary>
+    /// Class that represents a movie or a tv serie
+    /// </summary>
     public class Title
     {
         private string link, titulo, year, imageURL, siteRate, director, tagline, description, runningTime;
         private string[] genres, actors;
 
+        /// <summary>
+        /// get/set title
+        /// </summary>
         public string Titulo
         {
             get
@@ -23,6 +29,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set link
+        /// </summary>
         public string Link
         {
             get
@@ -36,6 +45,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set year
+        /// </summary>
         public string Year
         {
             get
@@ -49,6 +61,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set url of the cover
+        /// </summary>
         public string ImageURL
         {
             get
@@ -62,6 +77,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set rate of the site
+        /// </summary>
         public string SiteRate
         {
             get
@@ -75,6 +93,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set director
+        /// </summary>
         public string Director
         {
             get
@@ -88,6 +109,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set array of genres
+        /// </summary>
         public string[] Genres
         {
             get
@@ -101,6 +125,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set tagline
+        /// </summary>
         public string Tagline
         {
             get
@@ -114,6 +141,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set plot
+        /// </summary>
         public string Description
         {
             get
@@ -127,6 +157,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set array of actors
+        /// </summary>
         public string[] Actors
         {
             get
@@ -140,6 +173,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// get/set runtime
+        /// </summary>
         public string RunningTime
         {
             get
@@ -153,6 +189,9 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// prints all the info of the title
+        /// </summary>
         public void toString()
         {
             Console.WriteLine("link: "+link);
@@ -172,7 +211,7 @@ namespace IMDBDLL
                 }
             }
             Console.WriteLine("tagline: " + tagline);
-            Console.WriteLine("description: " + description);
+            Console.WriteLine("plot: " + description);
             if (actors != null)
             {
                 for (int i = 0; i < actors.Length; i++)
