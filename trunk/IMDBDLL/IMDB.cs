@@ -16,6 +16,12 @@ namespace IMDBDLL
         private string m_title;
         private string page;
         private Title title;
+        private string tit, temp;
+        //maximum of 3 genres per title
+        private string[] t_genres = new string[3];
+        //maximum of 5 actors per title
+        private string[] t_actors = new string[5];
+        private int ind, index;
 
         /// <summary>
         /// Executes the search by title in IMDB.
@@ -180,34 +186,20 @@ namespace IMDBDLL
         }
 
         /// <summary>
-        /// returns the object with info of the title
+        /// Returns the object with info of the title
         /// </summary>
-        /// <returns>the object that contains the info fetched from the site</returns>
+        /// <returns>The object that contains the info fetched from the site</returns>
         public Title getTitle()
         {
             return title;
         }
 
         /// <summary>
-        /// Parses the title page to get info from a movie or tv show
+        /// Gets the title from IMDb
         /// </summary>
-        public void parseTitlePage()
+        private void parseTitle()
         {
-            title = new Title();
-
-            int pos = page.IndexOf("<title>") + 7;
-            int l = page.IndexOf("</title>", pos + 1) - pos;
-            string tit = page.Substring(pos, l);
-            string temp, t_runningTime = "";
-
-            //maximum of 3 genres per title
-            string[] t_genres = new string[3];
-            //maximum of 5 actors per title
-            string[] t_actors = new string[5];
-
-            //link
-            title.Link = "http://www.imdb.com" + page.Substring(page.IndexOf("/title/"), 17);
-            //title
+            string temp;
             temp = tit.Substring(0, tit.IndexOf("("));
             if (temp.Contains("&#34;"))
             {
@@ -218,16 +210,28 @@ namespace IMDBDLL
                 temp.Replace("&#38;", "&");
             }
             title.Titulo = temp;
-            //year
+        }
+
+        /// <summary>
+        /// Gets the year from IMDb
+        /// </summary>
+        private void parseYear()
+        {
             tit = tit.Substring(tit.IndexOf("("));
             if (tit.Contains("/"))
             {
                 title.Year = tit.Substring(1, tit.IndexOf("/") - 1);
             }
             else title.Year = tit.Substring(1, tit.IndexOf(")") - 1);
-            //image link
-            int ind = page.IndexOf("\"poster\"");
-            int index = 0;
+        }
+
+        /// <summary>
+        /// Gets the cover link from IMDb
+        /// </summary>
+        private void parseCoverLink()
+        {
+            ind = page.IndexOf("\"poster\"");
+            index = 0;
             temp = "";
             if (ind != -1)
             {
@@ -240,9 +244,23 @@ namespace IMDBDLL
                 title.ImageURL = temp;
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the link from IMDb
+        /// </summary>
+        private void parseLink()
+        {
+            title.Link = "http://www.imdb.com" + page.Substring(page.IndexOf("/title/"), 17);
+        }
+
+        /// <summary>
+        /// Gets the rate from IMDb
+        /// </summary>
+        private void parseRate()
+        {
             ind = -1;
             temp = "";
-            //user rating
             ind = page.IndexOf("User Rating:");
             if (ind != -1)
             {
@@ -258,9 +276,15 @@ namespace IMDBDLL
                 }
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the director from IMDb
+        /// </summary>
+        private void parseDirector()
+        {
             ind = -1;
             temp = "";
-            //directors
             ind = page.IndexOf("Director:");
             if (ind != -1)
             {
@@ -308,9 +332,15 @@ namespace IMDBDLL
                 }
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the genres from IMDb
+        /// </summary>
+        private void parseGenres()
+        {
             ind = -1;
             temp = "";
-            //genre
             ind = page.IndexOf("Genre:");
             if (ind != -1)
             {
@@ -341,9 +371,15 @@ namespace IMDBDLL
                 title.Genres = t_genres;
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the tagline from IMDb
+        /// </summary>
+        private void parseTag()
+        {
             ind = -1;
             temp = "";
-            //tagline
             ind = page.IndexOf("Tagline:</h5>");
             if (ind != -1)
             {
@@ -360,9 +396,15 @@ namespace IMDBDLL
                 }
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the plot from IMDb
+        /// </summary>
+        private void parsePlot()
+        {
             ind = -1;
             temp = "";
-            //description
             ind = page.IndexOf("Plot:");
             if (ind != -1)
             {
@@ -378,9 +420,15 @@ namespace IMDBDLL
                 index = ind + 20 + title.Description.Length;
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the actors from IMDb
+        /// </summary>
+        private void parseActors()
+        {
             ind = -1;
             temp = "";
-            //actors
             ind = page.IndexOf("\"cast\"");
             if (ind != -1)
             {
@@ -418,9 +466,16 @@ namespace IMDBDLL
                 title.Actors = t_actors;
                 page = page.Substring(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the runtime from IMDb
+        /// </summary>
+        private void parseRuntime()
+        {
+            string t_runningTime = "";
             ind = -1;
             temp = "";
-            //runtime
             ind = page.IndexOf("Runtime:");
             if (ind != -1)
             {
@@ -436,6 +491,62 @@ namespace IMDBDLL
                 }
                 title.RunningTime = t_runningTime.Substring(0, t_runningTime.IndexOf("min"));
             }
+        }
+
+        /// <summary>
+        /// Parses the title page to get info from a movie or tv show
+        /// </summary>
+        /// <param name="fields">Fields to parse</param>
+        public void parseTitlePage(bool[] fields)
+        {
+            title = new Title();
+
+            int pos = page.IndexOf("<title>") + 7;
+            int l = page.IndexOf("</title>", pos + 1) - pos;
+            tit = page.Substring(pos, l);
+
+            //link
+            if(fields==null)
+                parseLink();
+            //title
+            if (fields==null || fields[0])
+                parseTitle();
+
+            //year
+            if (fields == null || fields[1])
+                parseYear();
+
+            //image link
+            if (fields == null || fields[9])
+                parseCoverLink();
+            
+            //user rating
+            if (fields == null || fields[7])
+                parseRate();
+
+            //directors
+            if (fields == null || fields[2])
+                parseDirector();
+
+            //genre
+            if (fields == null || fields[3])
+                parseGenres();
+            
+            //tagline
+            if (fields == null || fields[4])
+                parseTag();
+
+            //plot
+            if (fields == null || fields[5])
+                parsePlot();
+            
+            //actors
+            if (fields == null || fields[6])
+                parseActors();
+
+            //runtime
+            if (fields == null || fields[8])
+                parseRuntime();
         }
     }
 
@@ -751,6 +862,10 @@ namespace IMDBDLL
             }
         }
 
+        /// <summary>
+        /// Returns the object with info of the title
+        /// </summary>
+        /// <returns>The object that contains the info fetched from the site</returns>
         public Title getTitle()
         {
             return title;

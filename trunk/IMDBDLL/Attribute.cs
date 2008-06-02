@@ -106,6 +106,10 @@ namespace IMDBDLL
         }
 
         #region ICloneable Members
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public virtual object Clone()
         {
             return new Attribute(m_name, m_value, m_delim);

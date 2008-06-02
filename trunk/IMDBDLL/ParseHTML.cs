@@ -7,6 +7,10 @@ namespace IMDBDLL
     /// </summary>
     public class ParseHTML : Parse
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public AttributeList GetTag()
         {
             AttributeList tag = new AttributeList();
@@ -20,6 +24,10 @@ namespace IMDBDLL
             return tag;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public String BuildTag()
         {
             String buffer = "<";
@@ -55,6 +63,9 @@ namespace IMDBDLL
             return buffer;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected void ParseTag()
         {
             m_tag = "";
@@ -117,7 +128,10 @@ namespace IMDBDLL
             Advance();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public char Parse()
         {
             if (GetCurrentChar() == '<')

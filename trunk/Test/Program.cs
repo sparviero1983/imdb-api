@@ -16,7 +16,7 @@ namespace Test
         {
             IIMDb imdb = new IMDB();
             //make a search by movie
-            bool success = imdb.searchByTitle("matrix");
+            bool success = imdb.searchByTitle("things we lost");
             //search by id bool success = imdb.searchByID("tt0133093");
             if (success)
             {
@@ -63,10 +63,15 @@ namespace Test
                 }
                 else //if returns the correct movie web page
                 {
-                    imdb.parseTitlePage();
+                    imdb.parseTitlePage(null);
                     //prints the movie info
                     imdb.getTitle().toString();
                 }
+
+                //Refresh some fields of the title, in this case: title, director, tagline and actors
+                success = imdb.searchByID("tt0469623");
+                bool[] fields = { true, false, true, false, true, false, true, false, false, false };
+                imdb.getTitle().toString();
             }
         }
 

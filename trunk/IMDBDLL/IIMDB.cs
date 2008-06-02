@@ -40,7 +40,8 @@ namespace IMDBDLL
         /// <summary>
         /// Parses the title page to get info from a movie or tv show
         /// </summary>
-        void parseTitlePage();
+        /// <param name="fields">Fields to parse</param>
+        void parseTitlePage(bool[] fields);
         /// <summary>
         /// returns the object with info of the title
         /// </summary>
