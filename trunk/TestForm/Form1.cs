@@ -99,6 +99,8 @@ namespace TestForm
             Cursor = Cursors.WaitCursor;
             BackgroundWorker Worker;
             textBox2.Text = "";
+            workers = new ArrayList();
+            imdbs = new ArrayList();
             if (textBox1.Text != "")
             {
                 IMDB imdb = new IMDB();
