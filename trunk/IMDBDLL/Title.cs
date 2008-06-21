@@ -20,7 +20,9 @@ namespace IMDBDLL
         {
             get
             {
-                return titulo;
+                if (titulo != null)
+                    return titulo;
+                else return "- NA -";
             }
 
             set
@@ -36,7 +38,9 @@ namespace IMDBDLL
         {
             get
             {
-                return link;
+                if (link != null)
+                    return link;
+                else return "- NA -";
             }
 
             set
@@ -52,7 +56,9 @@ namespace IMDBDLL
         {
             get
             {
-                return year;
+                if (year != null)
+                    return year;
+                else return "- NA -";
             }
 
             set
@@ -68,7 +74,9 @@ namespace IMDBDLL
         {
             get
             {
-                return imageURL;
+                if (imageURL != null)
+                    return imageURL;
+                else return "- NA -";
             }
 
             set
@@ -84,7 +92,9 @@ namespace IMDBDLL
         {
             get
             {
-                return siteRate;
+                if (siteRate != null)
+                    return siteRate;
+                else return "- NA -";
             }
 
             set
@@ -100,7 +110,9 @@ namespace IMDBDLL
         {
             get
             {
-                return director;
+                if (director != null)
+                    return director;
+                else return "- NA -";
             }
 
             set
@@ -116,7 +128,9 @@ namespace IMDBDLL
         {
             get
             {
-                return genres;
+                if (genres != null)
+                    return genres;
+                else return null;
             }
 
             set
@@ -132,7 +146,9 @@ namespace IMDBDLL
         {
             get
             {
-                return tagline;
+                if (tagline != null)
+                    return tagline;
+                else return "- NA -";
             }
 
             set
@@ -148,7 +164,9 @@ namespace IMDBDLL
         {
             get
             {
-                return description;
+                if (description != null)
+                    return description;
+                else return "- NA -";
             }
 
             set
@@ -164,7 +182,9 @@ namespace IMDBDLL
         {
             get
             {
-                return actors;
+                if (actors != null)
+                    return actors;
+                else return null;
             }
 
             set
@@ -180,7 +200,9 @@ namespace IMDBDLL
         {
             get
             {
-                return runningTime;
+                if (runningTime != null)
+                    return runningTime;
+                else return "- NA -";
             }
 
             set
@@ -190,39 +212,35 @@ namespace IMDBDLL
         }
 
         /// <summary>
-        /// prints all the info of the title
+        /// Returns a string with all the info of the title, to be displayed on a textbox
         /// </summary>
-        public void toString()
+        public string toString()
         {
-            Console.WriteLine("link: "+link);
-            Console.WriteLine("titulo: " + titulo);
-            Console.WriteLine("ano: " + year);
-            Console.WriteLine("image url: " + imageURL);
-            Console.WriteLine("rate: " + siteRate);
-            Console.WriteLine("director: "+director);
+            string ret = "link: " + link + "\r\n titulo: " + titulo + "\r\n ano: " + year
+            + "\r\n image url: " + imageURL + "\r\n rate: " + siteRate + "\r\n director: " + director;
             if (genres != null)
             {
                 for (int i = 0; i < genres.Length; i++)
                 {
                     if (genres[i] != "")
                     {
-                        Console.WriteLine("genre" + (i + 1) + ": " + genres[i]);
+                        ret += "\r\ngenre" + (i + 1) + ": " + genres[i];
                     }
                 }
             }
-            Console.WriteLine("tagline: " + tagline);
-            Console.WriteLine("plot: " + description);
+            ret += "\r\n tagline: " + tagline +"\r\n plot: " + description;
             if (actors != null)
             {
                 for (int i = 0; i < actors.Length; i++)
                 {
                     if (actors[i] != "")
                     {
-                        Console.WriteLine("actor" + (i + 1) + ": " + actors[i]);
+                        ret += "\r\n actor" + (i + 1) + ": " + actors[i];
                     }
                 }
             }
-            Console.WriteLine("runtime: " + runningTime);
+            ret += "\r\n runtime: " + runningTime;
+            return ret;
         }
     }
 }
