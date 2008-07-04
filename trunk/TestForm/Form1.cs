@@ -35,6 +35,10 @@ namespace TestForm
         /// Quantity of workers running
         /// </summary>
         public int works;
+        /// <summary>
+        /// Type of title to be searched
+        /// </summary>
+        int tipo;
 
         /// <summary>
         /// Constructor
@@ -62,12 +66,16 @@ namespace TestForm
         {
             Application.DoEvents();
             BackgroundWorker worker = sender as BackgroundWorker;
-            IMDB imdb = e.Argument as IMDB;
+            string id = e.Argument as string;
             Application.DoEvents();
-            int tipo;
-            if (radioButton4.Checked) tipo = 0;
-            else tipo = 1;
-            imdb.parseTitlePage(null, null, worker, tipo);
+            IMDB imdb2 = new IMDB();
+            lock (imdbs)
+            {
+                imdbs.Add(imdb2);
+            }
+            imdb2.searchByID(id);
+            Application.DoEvents();
+            imdb2.parseTitlePage(null, null, worker, tipo);
             Application.DoEvents();
         }
         /// <summary>
@@ -116,9 +124,16 @@ namespace TestForm
                 if (success)
                 {
                     int type;
-                    if(radioButton4.Checked)
+                    if (radioButton4.Checked)
+                    {
                         type = imdb.getType(0);
-                    else type = imdb.getType(1);
+                        tipo = 0;
+                    }
+                    else
+                    {
+                        tipo = 1;
+                        type = imdb.getType(1);
+                    }
                     if (type == 0)
                     {
                         progressBar1.Maximum = 20;
@@ -135,27 +150,31 @@ namespace TestForm
                     }
                     else if(type == 1) {
                         links = imdb.parseSearch();
-                        progressBar1.Value = 10;
+
                         if (links != null)
                         {
-                            progressBar1.Maximum = 10*links.Count+10;
+                            progressBar1.Maximum = 10 * links.Count + 10;
+                            progressBar1.Value = 10;
                             for (int i = 0; i < links.Count; i++)
                             {
                                 Application.DoEvents();
-                                IMDB imdb2 = new IMDB();
+
                                 string id = ((string)links[i]);
-                                id = id.Substring(id.Length-10,9);
-                                imdb2.searchByID(id);
+                                id = id.Substring(id.Length - 10, 9);
                                 Worker = new BackgroundWorker();
                                 Application.DoEvents();
                                 Worker.WorkerReportsProgress = true;
                                 InitializeBackgoundWorker(Worker);
                                 workers.Add(Worker);
                                 works += 1;
-                                imdbs.Add(imdb2);
-                                Worker.RunWorkerAsync(imdb2);
+                                Worker.RunWorkerAsync(id);
                                 Application.DoEvents();
                             }
+                        }
+                        else
+                        {
+                            progressBar1.Maximum = 10;
+                            progressBar1.Value = 10;
                         }
                     }
                 }
