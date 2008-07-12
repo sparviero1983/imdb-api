@@ -68,14 +68,19 @@ namespace TestForm
             BackgroundWorker worker = sender as BackgroundWorker;
             string id = e.Argument as string;
             Application.DoEvents();
-            IMDB imdb2 = new IMDB();
-            lock (imdbs)
+            IMDB imdb2;
+            if (id != null && id != "")
             {
-                imdbs.Add(imdb2);
+                imdb2 = new IMDB();
+                lock (imdbs)
+                {
+                    imdbs.Add(imdb2);
+                }
+                imdb2.searchByID(id);
             }
-            imdb2.searchByID(id);
+            else imdb2 = (IMDB)imdbs[0];
             Application.DoEvents();
-            imdb2.parseTitlePage(null, null, worker, tipo);
+            imdb2.parseTitlePage(null, worker, tipo);
             Application.DoEvents();
         }
         /// <summary>
@@ -145,7 +150,7 @@ namespace TestForm
                         workers.Add(Worker);
                         works = 1;
                         imdbs.Add(imdb);
-                        Worker.RunWorkerAsync(imdb);
+                        Worker.RunWorkerAsync(null);
                         Application.DoEvents();
                     }
                     else if(type == 1) {

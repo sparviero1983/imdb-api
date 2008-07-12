@@ -22,7 +22,7 @@ namespace IMDBDLL
             {
                 if (titulo != null)
                     return titulo;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -40,7 +40,7 @@ namespace IMDBDLL
             {
                 if (link != null)
                     return link;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -58,7 +58,7 @@ namespace IMDBDLL
             {
                 if (year != null)
                     return year;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -75,8 +75,8 @@ namespace IMDBDLL
             get
             {
                 if (imageURL != null)
-                    return imageURL;
-                else return "- NA -";
+                    return formatImageURL(imageURL);
+                else return "- ND -";
             }
 
             set
@@ -94,7 +94,7 @@ namespace IMDBDLL
             {
                 if (siteRate != null)
                     return siteRate;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -112,7 +112,7 @@ namespace IMDBDLL
             {
                 if (director != null)
                     return director;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -148,7 +148,7 @@ namespace IMDBDLL
             {
                 if (tagline != null)
                     return tagline;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -166,7 +166,7 @@ namespace IMDBDLL
             {
                 if (description != null)
                     return description;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -202,7 +202,7 @@ namespace IMDBDLL
             {
                 if (runningTime != null)
                     return runningTime;
-                else return "- NA -";
+                else return "- ND -";
             }
 
             set
@@ -214,6 +214,7 @@ namespace IMDBDLL
         /// <summary>
         /// Returns a string with all the info of the title, to be displayed on a textbox
         /// </summary>
+        /// <returns>String with title infos</returns>
         public string toString()
         {
             string ret = "link: " + link + "\r\n titulo: " + titulo + "\r\n ano: " + year
@@ -241,6 +242,31 @@ namespace IMDBDLL
             }
             ret += "\r\n runtime: " + runningTime;
             return ret;
+        }
+
+        /// <summary>
+        /// To get the link to a cover with bigger height and width
+        /// </summary>
+        /// <param name="url">The link returned by IMDb</param>
+        /// <returns>The correct link</returns>
+        /// <remarks>You can change the size as you want, in the condition
+        /// of maintaining the aspect ratio. In this code the cover
+        /// will have 231px of width and 333px of height</remarks>
+        private string formatImageURL(string url)
+        {
+            int bSX = url.IndexOf("SX");
+            string tempSX = url.Substring(bSX);
+            int fSX = tempSX.IndexOf("_");
+            tempSX = tempSX.Substring(0, fSX);
+            url = url.Replace(tempSX, "SX231");
+
+            int bSY = url.IndexOf("SY");
+            string tempSY = url.Substring(bSY);
+            int fSY = tempSY.IndexOf("_");
+            tempSY = tempSY.Substring(0, fSY);
+            url = url.Replace(tempSY, "SY333");
+
+            return url;
         }
     }
 }

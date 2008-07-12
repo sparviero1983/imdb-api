@@ -27,6 +27,7 @@ namespace IMDBDLL
         /// <summary>
         /// Executes the search by title in IMDB.
         /// </summary>
+        /// <param name="title">The title of the title to be searched </param>
         public bool searchByTitle(string title)
         {
             m_title = title;
@@ -53,6 +54,7 @@ namespace IMDBDLL
         /// <summary>
         /// Executes the search by id in IMDB.
         /// </summary>
+        /// <param name="ID">The IMDb ID of the title to be searched </param>
         public bool searchByID(string ID)
         {
             page = "";
@@ -240,8 +242,6 @@ namespace IMDBDLL
                 index = ind + 90 + temp.Length;
                 temp = temp.Substring(temp.IndexOf("src") + 5);
                 temp = temp.Substring(0, temp.IndexOf("\""));
-
-                temp = temp.Replace("SY140_SX100", "SY400_SX600");
                 title.ImageURL = temp;
                 if (!temp.Contains(".gif"))
                     page = page.Substring(index);
@@ -508,12 +508,10 @@ namespace IMDBDLL
         /// <param name="titl">Title to update</param>
         /// <param name="w">Thread that executes this parse</param>
         /// <param name="tipo">Defines if it's to search a movie or a tv serie</param>
-        public void parseTitlePage(bool[] fields, Title titl, System.ComponentModel.BackgroundWorker w, int tipo)
+        public void parseTitlePage(bool[] fields, System.ComponentModel.BackgroundWorker w, int tipo)
         {
             worker = w;
-            if (titl == null)
-                title = new Title();
-            else title = titl;
+            title = new Title();
 
             int pos = page.IndexOf("<title>") + 7;
             int l = page.IndexOf("</title>", pos + 1) - pos;
@@ -545,9 +543,7 @@ namespace IMDBDLL
 
             if (prs)
             {
-                //link
-                if (fields == null)
-                    parseLink();
+                parseLink();
                 //title
                 if (fields == null || fields[0])
                     parseTitle();
