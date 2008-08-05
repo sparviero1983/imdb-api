@@ -100,7 +100,7 @@ namespace IMDBDLL
                     {
                         string res = tag["content"].Value;
                         res = res.ToLower();
-                        string t = "IMDb  Search";
+                        string t = "IMDb Search";
                         if (formato == 0 && res.Contains(m_title.ToLower()) && !page.Contains("TV series"))
                         {
                             m_title = tag["content"].Value;
