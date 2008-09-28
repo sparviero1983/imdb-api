@@ -57,6 +57,7 @@ namespace IMDBDLL
         /// <param name="ID">The IMDb ID of the title to be searched </param>
         public bool searchByID(string ID)
         {
+            m_title = String.Empty;
             page = "";
             string url = "http://www.imdb.com/title/" + ID + "/";
 
@@ -505,7 +506,6 @@ namespace IMDBDLL
         /// Parses the title page to get info from a movie or tv show
         /// </summary>
         /// <param name="fields">Fields to parse</param>
-        /// <param name="titl">Title to update</param>
         /// <param name="w">Thread that executes this parse</param>
         /// <param name="tipo">Defines if it's to search a movie or a tv serie</param>
         public void parseTitlePage(bool[] fields, System.ComponentModel.BackgroundWorker w, int tipo)
