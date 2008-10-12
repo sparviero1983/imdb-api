@@ -167,7 +167,10 @@ namespace IMDBDLL
                 {
                     temp = temp.Substring(0, temp.IndexOf("<p><b>"));
                 }
-
+                if (temp.Contains("Popular Characters"))
+                {
+                    temp = temp.Substring(0, temp.IndexOf("Popular Characters"));
+                }
                 ParseHTML parse = new ParseHTML();
                 ArrayList links = new ArrayList();
                 parse.Source = temp;
