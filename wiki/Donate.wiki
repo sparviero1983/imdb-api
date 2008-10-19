@@ -1,4 +1,4 @@
 #summary Donate via Paypal
 #labels Featured
 
-https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=544K7W9JHGJH6&lc=GB&item_number=IMDBDLL&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted
+<a href=https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=544K7W9JHGJH6&lc=GB&item_number=IMDBDLL&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted rel="nofollow"><img src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" /></a>
