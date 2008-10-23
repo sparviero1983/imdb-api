@@ -1,3 +1,17 @@
+Version 3.1 - xx-xx-xxxx - João Massena <jpmassena@gmail.com>
+**********************************************************
+	1- It is possible to parse episodes's information (name, first air date, plot) from all or just some seasons of the
+	   TV series;
+	
+	2- All the communication between the api and the form are event based;
+	
+	3- The results are transmitted in a XML document loaded on memory;
+	
+	4- The test form is improved with a richtextbox for the results display;
+	
+	5- Implemented a manager that is responsable to check what kind of page we get. The form only is used to pass the options
+	and the queries to the api and to display the results.
+
 Version 3.0 - 19-OCT-2008 - João Massena <jpmassena@gmail.com>
 **********************************************************
 	1- Restart the implementation from scratch.

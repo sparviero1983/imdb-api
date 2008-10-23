@@ -16,10 +16,12 @@
  */
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
 using IMDBDLL;
+using System.Xml;
 using IMDBDLL.MultiThreadEngine;
 
 namespace Test
@@ -32,20 +34,26 @@ namespace Test
         /// <summary>
         /// Delegate to call the processResults.
         /// </summary>
-        /// <param name="result">The results.</param>
-        public delegate void functionCall(ArrayList[] result);
+        /// <param name="xmlDoc">The XML document that holds the information obtained.</param>
+        public delegate void functionCall(XmlDocument xmlDoc);
 
         /// <summary>
         /// Delegate to call the errorHandler.
         /// </summary>
-        /// <param name="error">The error message.</param>
-        public delegate void errorCall(String error);
+        /// <param name="exc">The Exception.</param>
+        public delegate void errorCall(Exception exc);
 
         /// <summary>
         /// Delegate to call the progressUpdater.
         /// </summary>
         /// <param name="value">Value to add to the progress bar.</param>
         public delegate void progressCall(int value);
+
+        /// <summary>
+        /// Delegate to call the progressConf.
+        /// </summary>
+        /// <param name="value">Value to set the progress bar maximum.</param>
+        public delegate void progressConfCall(int value);
 
         /// <summary>
         /// Event of functionCall.
@@ -63,6 +71,11 @@ namespace Test
         private event progressCall formProgressCaller;
 
         /// <summary>
+        /// Event of progressConfCall.
+        /// </summary>
+        private event progressConfCall formProgressConfCaller;
+
+        /// <summary>
         /// Execution Start Time.
         /// </summary>
         private DateTime ExecutionStartTime;
@@ -77,6 +90,10 @@ namespace Test
         /// </summary>
         private TimeSpan ExecutionTime;
 
+        private bool error = false;
+
+
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -88,18 +105,20 @@ namespace Test
             formFunctionCaller += new functionCall(processResult); 
             formErrorCaller += new errorCall(errorHandler);
             formProgressCaller += new progressCall(progressUpdater);
+            formProgressConfCaller += new progressConfCall(progressConf);
         }
 
         /// <summary>
         /// Displays a message box with the error that occured.
         /// </summary>
-        /// <param name="error">Message of the error.</param>
-        public void errorHandler(String error)
+        /// <param name="exc">Exception occured.</param>
+        public void errorHandler(Exception exc)
         {
+            error = true;
             button1.Enabled = true;
             Cursor = Cursors.Default;
             progressBar1.Value = 0;
-            MessageBox.Show(error, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(exc.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -112,45 +131,202 @@ namespace Test
         }
 
         /// <summary>
+        /// Sets the maximum value for the progress bar.
+        /// </summary>
+        /// <param name="value"></param>
+        public void progressConf(int value)
+        {
+            progressBar1.Maximum = value;
+        }
+
+        /// <summary>
         /// Here we do whatever we want with the info.
         /// </summary>
-        /// <param name="result">The info from the titles parsed.</param>
-        public void processResult(ArrayList[] result)
+        /// <param name="xmlDoc">The XML document that holds the information obtained.</param>
+        public void processResult(XmlDocument xmlDoc)
         {
-            foreach (ArrayList arr in result) // For each title parsed.
+            if (xmlDoc.DocumentElement.HasChildNodes) // if there are results
             {
-                if (arr.Count != 0)// If there are infos.
+                if (!error) // and no errors occured
                 {
-                    textBox2.Text += "**Title: " + arr[1] + "\r\n";
-                    textBox2.Text += "**Link: " + arr[0] + "\r\n"; 
-                    textBox2.Text += "**Year: " + arr[2] + "\r\n"; 
-                    textBox2.Text += "**Cover: " + arr[3] + "\r\n";
-                    textBox2.Text += "**User rating: " + arr[4] + "\r\n";
-                    textBox2.Text += "**Director/creator: " + arr[5] + "\r\n";
-                    textBox2.Text += "**Genres:" + "\r\n";
-                    List<String> gens = (List<String>)arr[6];
-                    if (gens != null)
-                        foreach (String s in gens)
-                            textBox2.Text += "- " + s + "\r\n";
-                    textBox2.Text += "**Tagline: " + arr[7] + "\r\n";
-                    textBox2.Text += "**Plot: " + arr[8] + "\r\n";
-                    textBox2.Text += "**Actors info: " + "\r\n";
-                    List<String> acts = (List<String>)arr[9];
-                    if (acts != null)
-                        foreach (String s in acts)
-                            textBox2.Text += "- " + s + "\r\n";
-                    textBox2.Text += "**Runtime: " + arr[10] + "\r\n";
-                    textBox2.Text += "*******************************************\r\n";
+                    XmlNodeList titles = xmlDoc.GetElementsByTagName("movie"); // gets the movies
+                    if (titles.Count == 0)
+                    {
+                        titles = xmlDoc.GetElementsByTagName("serie"); // or the tv series
+                    }
+                    String link = "";
+                    foreach (XmlNode title in titles)
+                    {
+                        XmlNodeList infos = title.ChildNodes;
+                        for (int i = 0; i < infos.Count; i++)
+                        {
+                            if (infos[i].Name == "link") // if there is link info
+                                link = infos[i].InnerText;
+                            else if (infos[i].Name == "title") // if there is a title
+                            {
+                                String tit = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 12, FontStyle.Bold);
+                                richTextBox1.AppendText("Title: ");
+                                richTextBox1.SelectionFont = new Font("arial", 12, FontStyle.Regular);
+                                richTextBox1.AppendText(tit + Environment.NewLine);
+                                if (link != "")
+                                {
+                                    richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                    richTextBox1.AppendText("  Link: ");
+                                    richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                    richTextBox1.AppendText(link + Environment.NewLine);
+                                }
+                            }
+                            else if (infos[i].Name == "year") // if there is a year
+                            {
+                                String year = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Year: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(year + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "cover")// if there is a cover link
+                            {
+                                String cov = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Cover URL: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(cov + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "user_rating")// if there is an user rating
+                            {
+                                String rate = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  User Rating: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(rate + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "director")// if there is a director
+                            {
+                                String direct = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Director: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(direct + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "creator")// if there is a creator
+                            {
+                                String creat = infos[i].InnerText;
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Creator: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(creat + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "seasons")// if there is episodes information
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Episodes:" + Environment.NewLine);
+                                
+                                XmlNodeList seasons = infos[i].ChildNodes;
+                                foreach (XmlNode s in seasons)
+                                {
+                                    richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                    richTextBox1.AppendText("   Season " + s.Name.Substring(s.Name.IndexOf("season") + 6) + Environment.NewLine);
+                                    
+                                    XmlNodeList episodes = s.ChildNodes;
+                                    foreach (XmlNode ep in episodes)
+                                    {
+                                        XmlNodeList details = ep.ChildNodes;
+                                        foreach (XmlNode d in details)
+                                        {
+                                            if (d.Name == "number")//if there is a number
+                                            {
+                                                String numb = d.InnerText;
+                                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Bold);
+                                                richTextBox1.AppendText("     " + numb + ": ");
+                                            }
+                                            else if (d.Name == "title") //if there is a title
+                                                richTextBox1.AppendText(d.InnerText + Environment.NewLine);
+                                            else if (d.Name == "airDate")// if there is an air date
+                                            {
+                                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                                richTextBox1.AppendText("      Aired on: " + d.InnerText + Environment.NewLine);
+                                            }
+                                            else if (d.Name == "plot") //if there is a plot
+                                                richTextBox1.AppendText("      " + d.InnerText + Environment.NewLine);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (infos[i].Name == "genres")// if there is genres information
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Genres: " + Environment.NewLine);
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                XmlNodeList genres = infos[i].ChildNodes;
+                                foreach (XmlNode g in genres)
+                                {
+                                    richTextBox1.AppendText("    " + g.InnerText + Environment.NewLine);
+                                }
+                            }
+                            else if (infos[i].Name == "tagline")// if there is a tagline
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Tagline: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(infos[i].InnerText + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "plot")// if there is a plot
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Plot: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText(infos[i].InnerText + Environment.NewLine);
+                            }
+                            else if (infos[i].Name == "cast")// if there is a cast
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("  Cast: " + Environment.NewLine);
+                                XmlNodeList actors = infos[i].ChildNodes;
+                                foreach (XmlNode a in actors)
+                                {
+                                    String photo = "", page = "";
+                                    XmlNodeList details = a.ChildNodes;
+                                    foreach (XmlNode d in details)
+                                    {
+                                        if (d.Name == "photo") //if there is a photo url
+                                            photo = d.InnerText;
+                                        else if (d.Name == "page") //if there is a page link
+                                            page = d.InnerText;
+                                        else if (d.Name == "name") //if there is a name
+                                        {
+                                            richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                            richTextBox1.AppendText("    " + d.InnerText + Environment.NewLine);
+                                            richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                            if (photo != "")
+                                                richTextBox1.AppendText("     Photo URL: " + photo + Environment.NewLine);
+                                            if (page != "")
+                                                richTextBox1.AppendText("     Page URL: " + page + Environment.NewLine);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (infos[i].Name == "runtime")// if there is a runtime
+                            {
+                                richTextBox1.SelectionFont = new Font("arial", 9, FontStyle.Bold);
+                                richTextBox1.AppendText("Runtime: ");
+                                richTextBox1.SelectionFont = new Font("arial", 8, FontStyle.Regular);
+                                richTextBox1.AppendText("  " + infos[i].InnerText + " min" +Environment.NewLine + Environment.NewLine);
+                            }
+                        }
+                        
+                    }
                 }
-                
             }
-            //Here we calculate the time of execution and displays that info. (for debug)
+            else
+            {
+                errorHandler(new Exception("No results found!"));
+            }
+
             ExecutionStopTime = DateTime.Now;
             ExecutionTime = ExecutionStopTime - ExecutionStartTime;
-            textBox2.Text += String.Format("Time of execution: {0:0.00} seconds", ExecutionTime.TotalSeconds.ToString());
-            
-            button1.Enabled = true;
-            Cursor = Cursors.Default;
+            richTextBox1.SelectionFont = new Font("arial", 12, FontStyle.Bold);
+            richTextBox1.AppendText(ExecutionTime.TotalSeconds.ToString());
         }
 
         /// <summary>
@@ -163,73 +339,49 @@ namespace Test
             String text = textBox1.Text;
             if (text != "") // if there is text in the textBox.
             {
-                Cursor = Cursors.WaitCursor;
-                button1.Enabled = false;
-                textBox2.Text = "";
-                progressBar1.Value = 0;
-                progressBar1.Maximum = 1000;
                 ExecutionStartTime = DateTime.Now; //Starts the clock.
+                richTextBox1.Clear(); // Clear the text field.
+                error = false; //Reset the error.
+                progressBar1.Value = 0; //Reset the progressbar.
                 
-                // Starts the imdb class
-                IMDB imdb = new IMDB();
-                String success = "", url = "";
-                int type = -1, media = 0;
+
+                //Starts the manager of the api.
+                IMDbManager manag = new IMDbManager();
+                manag.parentErrorCaller = formErrorCaller;
+                manag.parentFunctionCaller = formFunctionCaller;
+                manag.parentProgressUpdaterCaller = formProgressCaller;
+                manag.parentProgressConfCaller = formProgressConfCaller;
+
+                //Read the options of the user.
+                bool[] fields = { true, true, true, true, true, true, true, true, true, true, true }; //Parses all the fields.
                 bool titleR = radioButton1.Checked, serieR = radioButton4.Checked;
-                ArrayList results;
-
-                if (titleR) //if its to search by title
-                    url = "http://www.imdb.com/find?s=all&q=" + text;
-                else // or by ID
-                    url = "http://www.imdb.com/title/" + text + "/";
-
-                success = imdb.getPage(url); // Connects to IMDb and gets the html page
-
-                if(serieR) // If it's a TV serie we are looking for
+                int media = 0, sSeas = 0, eSeas = 0, searchMode = 0, nActors = 5;
+                if (serieR) // If it's a TV serie we are looking for
+                { 
                     media = 1;
-
-                if (success == "OK" && titleR) // If we could get the page and searching by title
-                {
-                    type = imdb.getPageType(media, text); // Verify if it's a specific title page or a search result page
-                    progressUpdater(100);
-                }
-                else if (success != "OK") // If there was an error fetching the html page
-                {
-                    errorHandler(success);
-                }
-
-                bool[] fields = { true, true, true, true, true, true, true, true, true, true }; //Parses all the fields.
-
-                if (type == 0)
-                {
-                    List<String> links = new List<String>();
-                    links = imdb.parseTitleLinks(); // Gets the relevant links from that page
-                    if (links.Count != 0)
+                    if (checkBox1.Checked) // Set how much seasons is to parse.
                     {
-                        String l = "http://www.imdb.com";
-
-                        for (int i = 0; i < links.Count; i++)
-                        {
-                            links[i] = l + links[i];
-                        }
-                        progressBar1.Maximum = 100 + links.Count * 100;
-
-                        //Here we start the thread manager
-                        MTManager MTM = new MTManager(links, fields, 5, media);
-                        MTM.parentFormCaller = formFunctionCaller;
-                        MTM.parentFormErrorCaller = formErrorCaller;
-                        MTM.parentProgressCaller = formProgressCaller;
-                        MTM.startManager();
+                        sSeas = -1;
+                        eSeas = -1;
                     }
                     else
                     {
-                        errorHandler("No Results found");
+                        sSeas = Int32.Parse(textBox3.Text);
+                        eSeas = Int32.Parse(textBox4.Text);
                     }
                 }
-                else
+
+                if (!titleR) // If it's to search by ID
+                    searchMode = 1;
+
+                if (checkBox2.Checked)
                 {
-                    results = imdb.parseTitlePage(fields, media, 5);
-                    processResult(new ArrayList[] { results });
-                }    
+                    nActors = -1;
+                }
+                else nActors = Int32.Parse(textBox5.Text);
+
+                //Call the api.
+                manag.IMDbSearch(searchMode, text, media, nActors, sSeas, eSeas, fields);
             }
         }
 
@@ -242,6 +394,37 @@ namespace Test
         {
             if (e.KeyCode == Keys.Enter)
                 button1_Click(sender, null);
+        }
+
+        /// <summary>
+        /// If series radio button checked state changed
+        /// </summary>
+        /// <param name="sender">default argument.</param>
+        /// <param name="e">default argument.</param>
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox1.Enabled = !checkBox1.Enabled;
+        }
+
+        /// <summary>
+        /// If all seasons radio button checked state changed.
+        /// </summary>
+        /// <param name="sender">default argument.</param>
+        /// <param name="e">default argument.</param>
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox3.Enabled = !textBox3.Enabled;
+            textBox4.Enabled = !textBox4.Enabled;
+        }
+
+        /// <summary>
+        /// If all actors radio button checked state changed.
+        /// </summary>
+        /// <param name="sender">default argument.</param>
+        /// <param name="e">default argument.</param>
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox5.Enabled = !textBox5.Enabled;
         }
     }
 }

@@ -22,6 +22,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using System.ComponentModel;
+using System.Xml;
 
 namespace IMDBDLL.MultiThreadEngine
 {
@@ -46,6 +47,16 @@ namespace IMDBDLL.MultiThreadEngine
         private int media;
 
         /// <summary>
+        /// If media is a TV serie, parse episodes's info from this season.
+        /// </summary>
+        private int sSeas;
+
+        /// <summary>
+        /// If media is a TV serie, parse episodes's info to this season.
+        /// </summary>
+        private int eSeas;
+
+        /// <summary>
         /// Array that holds all the workers.
         /// </summary>
         private MTWorker[] workers;
@@ -59,6 +70,11 @@ namespace IMDBDLL.MultiThreadEngine
         /// Array that holds information on wich fields are to be parsed.
         /// </summary>
         private bool[] fields;
+
+
+        private XmlDocument xmlDoc;
+
+
 
         /// <summary>
         /// Array that holds the links of the titles to be parsed.
@@ -93,17 +109,24 @@ namespace IMDBDLL.MultiThreadEngine
         /// <summary>
         /// Constructor of the manager.
         /// </summary>
+        /// <param name="xml">The XML document that holds the information obtained.</param>
         /// <param name="l">Links to connect to.</param>
         /// <param name="f">Fields to be parsed.</param>
         /// <param name="nActors">Number of actors to parse.</param>
         /// <param name="m">Type of title to parse.</param>
-        public MTManager(List<String> l, bool[] f, int nActors, int m)
+        /// <param name="s">Type of title to parse.</param>
+        /// <param name="e">Type of title to parse.</param>
+        public MTManager(XmlDocument xml, List<String> l, bool[] f, int nActors, int m, int s, int e)
         {
+            error = false;
             numWorkers = l.Count;
             links = l;
             fields = f;
             numActors = nActors;
             media = m;
+            sSeas = s;
+            eSeas = e;
+            xmlDoc = xml;
         }
 
         /// <summary>
@@ -135,6 +158,9 @@ namespace IMDBDLL.MultiThreadEngine
                     param.fields = fields;
                     param.media = media;
                     param.url = links[worker.WorkerID];
+                    param.sSeas = sSeas;
+                    param.eSeas = eSeas;
+                    param.xmlDoc = xmlDoc;
 
                     worker.RunWorkerAsync(param); // Make the worker start his job.
                 }
@@ -149,6 +175,7 @@ namespace IMDBDLL.MultiThreadEngine
         {
             MTW.ProgressChanged += MTWorker_ProgressChanged;
             MTW.RunWorkerCompleted += MTWorker_RunWorkerCompleted;
+            MTW.parentErrorCaller = parentFormErrorCaller;
         }
 
         /// <summary>
@@ -169,7 +196,6 @@ namespace IMDBDLL.MultiThreadEngine
         private void MTWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             MTWorker worker = sender as MTWorker; // Worker that raised the event.
-            ArrayList res; // Arraylist that holds the worker results of the parsing.
             if (e.Error != null) // If there was an error during the parse.
             {
                 if (!error)
@@ -183,13 +209,8 @@ namespace IMDBDLL.MultiThreadEngine
                             w.CancelAsync();
                         }
                     }
-                    parentFormErrorCaller.DynamicInvoke(new Object[] { e.Error.Message }); // Tell the parent Form there was an error.
+                    parentFormErrorCaller.DynamicInvoke(new Object[] { e.Error }); // Tell the parent Form there was an error.
                 }
-            }
-            else
-            {
-                res = (ArrayList)e.Result; // get the result from the worker.
-                result[worker.WorkerID] = res; // add it to the results array.
             }
 
             if (!error)
@@ -203,7 +224,7 @@ namespace IMDBDLL.MultiThreadEngine
                 }
                 if (!workersWorking) // if not, call the function that will process the results, located in the caller form.
                 {
-                    parentFormCaller.DynamicInvoke(new Object[] { result });
+                    parentFormCaller.DynamicInvoke(new Object[] { xmlDoc });
                 }
             }
         }

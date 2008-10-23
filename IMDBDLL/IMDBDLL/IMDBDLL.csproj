@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMDB.cs" />
+    <Compile Include="IMDbManager.cs" />
     <Compile Include="MultiThreadEngine\MTManager.cs" />
     <Compile Include="MultiThreadEngine\MTWorker.cs">
       <SubType>Component</SubType>

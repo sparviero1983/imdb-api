@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace IMDBDLL.MultiThreadEngine
 {
@@ -34,6 +35,9 @@ namespace IMDBDLL.MultiThreadEngine
         public bool[] fields;
         public int media;
         public int actorN;
+        public int sSeas;
+        public int eSeas;
+        public XmlDocument xmlDoc;
     }
 
     /// <summary>
@@ -51,6 +55,33 @@ namespace IMDBDLL.MultiThreadEngine
         public int WorkerID { get { return workerID; } }
 
         /// <summary>
+        /// Event that raises the progress updater caller.
+        /// </summary>
+        private event progressCall progressCaller;
+
+        /// <summary>
+        /// Event that raises the error caller.
+        /// </summary>
+        private event errorCall errorCaller;
+
+        /// <summary>
+        /// Delegate that handles error calls.
+        /// </summary>
+        /// <param name="exc">Exception that occured.</param>
+        public delegate void errorCall(Exception exc);
+
+        /// <summary>
+        /// Delegate that handles progress update calls.
+        /// </summary>
+        /// <param name="value">value to add to actual progress value.</param>
+        public delegate void progressCall(int value);
+
+        /// <summary>
+        /// Delegate that calls the parent error handler.
+        /// </summary>
+        public Delegate parentErrorCaller;
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         public MTWorker()
@@ -65,6 +96,8 @@ namespace IMDBDLL.MultiThreadEngine
         public MTWorker(int id)
         {
             workerID = id;
+            progressCaller += new progressCall(progressHandler);
+            errorCaller += new errorCall(errorHandler);
         }
 
         /// <summary>
@@ -78,22 +111,30 @@ namespace IMDBDLL.MultiThreadEngine
             bool[] fields = ((Params)e.Argument).fields;
             int media = ((Params)e.Argument).media;
             int actorN = ((Params)e.Argument).actorN;
+            int sSeas = ((Params)e.Argument).sSeas;
+            int eSeas = ((Params)e.Argument).eSeas;
+            XmlDocument xmlDoc = ((Params)e.Argument).xmlDoc;
             IMDB imdb = new IMDB();
+            imdb.parentProgressCaller = progressCaller;
+            imdb.parentErrorCaller = errorCaller;
 
+            bool success = imdb.getPage(url);
 
-            String success = imdb.getPage(url);
-
-            if (success == "OK")
+            if (success)
             {
                 this.ReportProgress(40);
-                ArrayList result = imdb.parseTitlePage(fields, media, actorN);
-                e.Result = result;
-                this.ReportProgress(60);
+                imdb.parseTitlePage(xmlDoc, fields, media, actorN, sSeas, eSeas);
             }
-            else
-            {
-                throw new Exception(success);
-            }
+        }
+
+        private void progressHandler(int value)
+        {
+            this.ReportProgress(value);
+        }
+
+        private void errorHandler(Exception exc)
+        {
+            parentErrorCaller.DynamicInvoke(new object[] { exc });
         }
     }
 }
