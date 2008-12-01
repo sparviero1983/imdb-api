@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TVDBDLL", "TVDBDLL\TVDBDLL.csproj", "{5DF5E740-DF96-413D-B615-B3FF30F780B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{BE7C0E41-E608-4710-BAC1-866D461D8A51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DF5E740-DF96-413D-B615-B3FF30F780B1} = {5DF5E740-DF96-413D-B615-B3FF30F780B1}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DF5E740-DF96-413D-B615-B3FF30F780B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF5E740-DF96-413D-B615-B3FF30F780B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF5E740-DF96-413D-B615-B3FF30F780B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF5E740-DF96-413D-B615-B3FF30F780B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE7C0E41-E608-4710-BAC1-866D461D8A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE7C0E41-E608-4710-BAC1-866D461D8A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE7C0E41-E608-4710-BAC1-866D461D8A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE7C0E41-E608-4710-BAC1-866D461D8A51}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
