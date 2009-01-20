@@ -49,11 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMDB.cs" />
+    <Compile Include="IMDbActor.cs" />
+    <Compile Include="IMDbDirCrea.cs" />
     <Compile Include="IMDbManager.cs" />
-    <Compile Include="MultiThreadEngine\MTManager.cs" />
-    <Compile Include="MultiThreadEngine\MTWorker.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="IMDbSerieEpisode.cs" />
+    <Compile Include="IMDbSerieSeason.cs" />
+    <Compile Include="IMDbTitle.cs" />
+    <Compile Include="IMDbLink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
